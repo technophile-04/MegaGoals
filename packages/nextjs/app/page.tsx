@@ -1,71 +1,102 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import type { NextPage } from "next";
+import { parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { Address, AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+  const [participantAddresses, setParticipantAddresses] = useState([""]);
+  const [stakeAmount, setStakeAmount] = useState("");
+  const [commitmentMessage, setCommitmentMessage] = useState("");
+  const { writeContractAsync: writeGroupCommitmentContractAsync } = useScaffoldWriteContract("GroupCommitment");
+
+  const handleAddAddress = () => {
+    setParticipantAddresses([...participantAddresses, ""]);
+  };
+
+  const handleRemoveAddress = (index: number) => {
+    const newAddresses = participantAddresses.filter((_, i) => i !== index);
+    setParticipantAddresses(newAddresses);
+  };
+
+  const handleAddressChange = (index: number, value: string) => {
+    const newAddresses = [...participantAddresses];
+    newAddresses[index] = value;
+    setParticipantAddresses(newAddresses);
+  };
+
+  const handleCreateGroupCommitment = async () => {
+    try {
+      const validAddresses = participantAddresses.filter(addr => addr.trim() !== "");
+      console.log("Creating group commitment with addresses:", validAddresses);
+      console.log("Commitment message:", commitmentMessage);
+      await writeGroupCommitmentContractAsync({
+        functionName: "createCommitment",
+        args: [validAddresses, commitmentMessage],
+        value: parseEther(stakeAmount),
+      });
+    } catch (e) {
+      console.error("Error creating group commitment:", e);
+    }
+  };
 
   return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
-          </div>
-
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
-
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
+    <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="px-5 w-full max-w-2xl">
+        <h1 className="text-center mb-8">
+          <span className="block text-2xl mb-2">Welcome to</span>
+          <span className="block text-4xl font-bold">Group Commitment</span>
+        </h1>
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="flex justify-center items-center space-x-2 mb-4">
+              <p className="font-medium">Connected Address:</p>
+              <Address address={connectedAddress} />
             </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
+            <div className="space-y-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Commitment Message</span>
+                </label>
+                <InputBase value={commitmentMessage} onChange={setCommitmentMessage} />
+              </div>
+              <div className="form-control space-y-2">
+                <label className="label">
+                  <span className="label-text">participant addresses</span>
+                </label>
+                {participantAddresses.map((address, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <AddressInput
+                      value={address}
+                      onChange={value => handleAddressChange(index, value)}
+                      placeholder={`Participant ${index + 1} Address`}
+                    />
+                    {index > 0 && (
+                      <button onClick={() => handleRemoveAddress(index)} className="btn btn-circle btn-sm btn-error">
+                        <MinusIcon className="w-[20px] h-[20px]" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button onClick={handleAddAddress} className="btn btn-circle btn-sm btn-primary">
+                <PlusIcon className="w-[20px] h-[20px]" />
+              </button>
+              <EtherInput value={stakeAmount} onChange={setStakeAmount} placeholder="Stake Amount (ETH)" />
+              <button onClick={handleCreateGroupCommitment} className="btn btn-primary w-full">
+                Create Group Commitment
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
