@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { SignInBtn } from "~~/components/SignInBtn";
 import { Address, AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -13,7 +14,7 @@ const Home: NextPage = () => {
   const [participantAddresses, setParticipantAddresses] = useState([""]);
   const [stakeAmount, setStakeAmount] = useState("");
   const [commitmentMessage, setCommitmentMessage] = useState("");
-  const { writeContractAsync: writeGroupCommitmentContractAsync } = useScaffoldWriteContract("GroupCommitment");
+  const { writeContractAsync: writeGroupCommitmentContractAsync } = useScaffoldWriteContract("CommitmentContract");
 
   const handleAddAddress = () => {
     setParticipantAddresses([...participantAddresses, ""]);
@@ -52,6 +53,7 @@ const Home: NextPage = () => {
           <span className="block text-2xl mb-2">Welcome to</span>
           <span className="block text-4xl font-bold">Group Commitment</span>
         </h1>
+        <SignInBtn />
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <div className="flex justify-center items-center space-x-2 mb-4">

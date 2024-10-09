@@ -6,22 +6,9 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   31337: {
-    GroupCommitment: {
-      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+    CommitmentContract: {
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "commitmentId",
-              type: "uint256",
-            },
-          ],
-          name: "AllProofsSubmitted",
-          type: "event",
-        },
         {
           anonymous: false,
           inputs: [
@@ -34,14 +21,8 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "address[]",
-              name: "winners",
+              name: "completedParticipants",
               type: "address[]",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "reward",
-              type: "uint256",
             },
           ],
           name: "CommitmentCompleted",
@@ -58,27 +39,33 @@ const deployedContracts = {
             },
             {
               indexed: false,
-              internalType: "address[]",
-              name: "participants",
-              type: "address[]",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "totalStake",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "creationTime",
-              type: "uint256",
+              internalType: "address",
+              name: "creator",
+              type: "address",
             },
             {
               indexed: false,
               internalType: "string",
-              name: "message",
+              name: "description",
               type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "stakeAmount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "endDate",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "bool",
+              name: "isGroupCommitment",
+              type: "bool",
             },
           ],
           name: "CommitmentCreated",
@@ -94,49 +81,18 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              indexed: true,
+              indexed: false,
               internalType: "address",
               name: "participant",
               type: "address",
             },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "proof",
-              type: "string",
-            },
           ],
-          name: "ProofSubmitted",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "commitmentId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "voter",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "address[]",
-              name: "votedFor",
-              type: "address[]",
-            },
-          ],
-          name: "VoteCast",
+          name: "ParticipantJoined",
           type: "event",
         },
         {
           inputs: [],
-          name: "COMMITMENT_DURATION",
+          name: "commitmentCounter",
           outputs: [
             {
               internalType: "uint256",
@@ -158,34 +114,34 @@ const deployedContracts = {
           name: "commitments",
           outputs: [
             {
+              internalType: "address",
+              name: "creator",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
               internalType: "uint256",
-              name: "totalStake",
+              name: "stakeAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "endDate",
               type: "uint256",
             },
             {
               internalType: "bool",
-              name: "isActive",
+              name: "isGroupCommitment",
               type: "bool",
             },
             {
               internalType: "bool",
               name: "isCompleted",
               type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "creationTime",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "allProofsSubmitted",
-              type: "bool",
-            },
-            {
-              internalType: "string",
-              name: "message",
-              type: "string",
             },
           ],
           stateMutability: "view",
@@ -195,8 +151,13 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "commitmentId",
+              name: "_commitmentId",
               type: "uint256",
+            },
+            {
+              internalType: "address[]",
+              name: "_completedParticipants",
+              type: "address[]",
             },
           ],
           name: "completeCommitment",
@@ -207,14 +168,24 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address[]",
-              name: "_participants",
-              type: "address[]",
+              internalType: "string",
+              name: "_description",
+              type: "string",
             },
             {
-              internalType: "string",
-              name: "_message",
-              type: "string",
+              internalType: "uint256",
+              name: "_stakeAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_durationInDays",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "_isGroupCommitment",
+              type: "bool",
             },
           ],
           name: "createCommitment",
@@ -226,36 +197,32 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "commitmentId",
+              name: "_commitmentId",
               type: "uint256",
             },
+          ],
+          name: "getParticipants",
+          outputs: [
             {
-              internalType: "string",
-              name: "proof",
-              type: "string",
+              internalType: "address[]",
+              name: "",
+              type: "address[]",
             },
           ],
-          name: "submitProof",
-          outputs: [],
-          stateMutability: "nonpayable",
+          stateMutability: "view",
           type: "function",
         },
         {
           inputs: [
             {
               internalType: "uint256",
-              name: "commitmentId",
+              name: "_commitmentId",
               type: "uint256",
             },
-            {
-              internalType: "address[]",
-              name: "votedFor",
-              type: "address[]",
-            },
           ],
-          name: "vote",
+          name: "joinCommitment",
           outputs: [],
-          stateMutability: "nonpayable",
+          stateMutability: "payable",
           type: "function",
         },
       ],
