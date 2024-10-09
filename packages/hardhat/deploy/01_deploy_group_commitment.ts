@@ -4,7 +4,7 @@ const deployGroupCommitment: DeployFunction = async function (hre: HardhatRuntim
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("GroupCommitment", {
+  await deploy("CommitmentContract", {
     from: deployer,
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
