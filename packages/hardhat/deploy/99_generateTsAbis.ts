@@ -101,6 +101,7 @@ function getContractDataFromDeployments() {
  */
 const generateTsAbis: DeployFunction = async function () {
   const TARGET_DIR = "../nextjs/contracts/";
+  const anotherTargetDir = "../ponder/contracts/";
   const allContractsData = getContractDataFromDeployments();
 
   const fileContent = Object.entries(allContractsData).reduce((content, [chainId, chainConfig]) => {
@@ -110,10 +111,26 @@ const generateTsAbis: DeployFunction = async function () {
   if (!fs.existsSync(TARGET_DIR)) {
     fs.mkdirSync(TARGET_DIR);
   }
+
+  if (!fs.existsSync(anotherTargetDir)) {
+    fs.mkdirSync(anotherTargetDir);
+  }
+
   fs.writeFileSync(
     `${TARGET_DIR}deployedContracts.ts`,
     prettier.format(
       `${generatedContractComment} import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract"; \n\n
+ const deployedContracts = {${fileContent}} as const; \n\n export default deployedContracts satisfies GenericContractsDeclaration`,
+      {
+        parser: "typescript",
+      },
+    ),
+  );
+
+  fs.writeFileSync(
+    `${anotherTargetDir}deployedContracts.ts`,
+    prettier.format(
+      `${generatedContractComment} import { GenericContractsDeclaration } from "./"; \n\n
  const deployedContracts = {${fileContent}} as const; \n\n export default deployedContracts satisfies GenericContractsDeclaration`,
       {
         parser: "typescript",
