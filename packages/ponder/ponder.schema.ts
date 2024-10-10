@@ -11,6 +11,7 @@ export default createSchema((p) => ({
       isGroupCommitment: p.boolean(),
       isCompleted: p.boolean(),
       completedParticipants: p.string().list().optional(), // array of addresses
+      proofFrequency: p.bigint(),
       participants: p.many("Participant.commitmentId"),
     },
     {

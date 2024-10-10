@@ -1,10 +1,16 @@
 import { ponder } from "@/generated";
 
+export const replacer = (_key: string, value: unknown) =>
+  typeof value === "bigint" ? value.toString() : value;
+
+// I have a secret at .env.local and then I need to make a POSt request to make my NEXT backend the api is `http://localhost:300/api/create-commitment` and the body is `{"description":"test","stakeAmount":"100","endDate":"2022-12-12","isGroupCommitment":false}`
+
 ponder.on(
   "CommitmentContract:CommitmentCreated",
   async ({ event, context }) => {
     const { Commitment, Participant } = context.db;
 
+    // Create commitment in Ponder
     await Commitment.create({
       id: event.args.commitmentId,
       data: {
@@ -12,6 +18,7 @@ ponder.on(
         description: event.args.description,
         stakeAmount: event.args.stakeAmount,
         endDate: event.args.endDate,
+        proofFrequency: event.args.proofFrequency,
         isGroupCommitment: event.args.isGroupCommitment,
         isCompleted: false,
       },
@@ -24,6 +31,16 @@ ponder.on(
         commitmentId: event.args.commitmentId,
         participant: event.args.creator,
       },
+    });
+
+    // Ensure user exists in off-chain database
+    await fetch("http://localhost:3000/api/ensure-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.SECRET}`,
+      },
+      body: JSON.stringify({ address: event.args.creator }, replacer),
     });
   },
 );

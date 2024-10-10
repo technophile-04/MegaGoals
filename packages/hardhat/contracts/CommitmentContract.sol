@@ -8,6 +8,7 @@ contract CommitmentContract {
 		uint256 stakeAmount;
 		uint256 endDate;
 		bool isGroupCommitment;
+		uint256 proofFrequency;
 		bool isCompleted;
 		address[] participants;
 		mapping(address => bool) hasParticipated;
@@ -22,6 +23,7 @@ contract CommitmentContract {
 		string description,
 		uint256 stakeAmount,
 		uint256 endDate,
+		uint256 proofFrequency,
 		bool isGroupCommitment
 	);
 	event ParticipantJoined(uint256 indexed commitmentId, address participant);
@@ -34,6 +36,7 @@ contract CommitmentContract {
 		string memory _description,
 		uint256 _stakeAmount,
 		uint256 _durationInDays,
+		uint256 proofFrequency,
 		bool _isGroupCommitment
 	) public payable {
 		require(
@@ -51,6 +54,7 @@ contract CommitmentContract {
 		newCommitment.isCompleted = false;
 		newCommitment.participants.push(msg.sender);
 		newCommitment.hasParticipated[msg.sender] = true;
+		newCommitment.proofFrequency = proofFrequency;
 
 		emit CommitmentCreated(
 			commitmentId,
@@ -58,6 +62,7 @@ contract CommitmentContract {
 			_description,
 			_stakeAmount,
 			newCommitment.endDate,
+			proofFrequency,
 			_isGroupCommitment
 		);
 	}

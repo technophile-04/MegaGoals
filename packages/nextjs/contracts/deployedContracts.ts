@@ -63,6 +63,12 @@ const deployedContracts = {
             },
             {
               indexed: false,
+              internalType: "uint256",
+              name: "proofFrequency",
+              type: "uint256",
+            },
+            {
+              indexed: false,
               internalType: "bool",
               name: "isGroupCommitment",
               type: "bool",
@@ -139,6 +145,11 @@ const deployedContracts = {
               type: "bool",
             },
             {
+              internalType: "uint256",
+              name: "proofFrequency",
+              type: "uint256",
+            },
+            {
               internalType: "bool",
               name: "isCompleted",
               type: "bool",
@@ -180,6 +191,11 @@ const deployedContracts = {
             {
               internalType: "uint256",
               name: "_durationInDays",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "proofFrequency",
               type: "uint256",
             },
             {
