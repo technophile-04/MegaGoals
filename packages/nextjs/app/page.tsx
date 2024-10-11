@@ -48,7 +48,7 @@ const Home: NextPage = () => {
       <div className="px-5 w-full max-w-2xl">
         <h1 className="text-center mb-8">
           <span className="block text-2xl mb-2">Welcome to</span>
-          <span className="block text-4xl font-bold">MegaGoals</span>
+          <span className="block text-4xl font-bold">MegaGoals 🎯</span>
         </h1>
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
