@@ -65,6 +65,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
       await writeCommitmentContractAsync({
         functionName: "joinCommitment",
         args: [BigInt(id)],
+        value: BigInt(commitment.stakeAmount),
       });
     } catch (e) {
       console.error("Error joining commitment:", e);
