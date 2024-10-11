@@ -2739,18 +2739,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/rainbowkit-siwe-next-auth@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@rainbow-me/rainbowkit-siwe-next-auth@npm:0.4.1"
-  peerDependencies:
-    "@rainbow-me/rainbowkit": 2.0.x || 2.1.x
-    next-auth: ">=4.21.0 <5"
-    react: ">=18"
-    siwe: ^2.1.4
-  checksum: ce885be3f12df968c5dc223e18bd0d21375da872e70bb2244b4524b9e01239268df3b419001912974a435ca05a628ed81847c15d5b44bd7854ca89148df175d5
-  languageName: node
-  linkType: hard
-
 "@rainbow-me/rainbowkit@npm:2.1.0":
   version: 2.1.0
   resolution: "@rainbow-me/rainbowkit@npm:2.1.0"
@@ -3101,7 +3089,6 @@ __metadata:
     "@apollo/client": ^3.11.8
     "@heroicons/react": ~2.1.5
     "@rainbow-me/rainbowkit": 2.1.6
-    "@rainbow-me/rainbowkit-siwe-next-auth": ^0.4.1
     "@tanstack/react-query": ~5.28.6
     "@trivago/prettier-plugin-sort-imports": ~4.1.1
     "@types/node": ~18.19.50

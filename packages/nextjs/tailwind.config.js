@@ -1,33 +1,36 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./utils/**/*.{js,ts,jsx,tsx}"],
+
   plugins: [require("daisyui")],
+
   darkTheme: "dark",
+
   darkMode: ["selector", "[data-theme='dark']"],
+
   // DaisyUI theme colors
   daisyui: {
     themes: [
       {
         light: {
-          primary: "#93BBFB",
-          "primary-content": "#212638",
-          secondary: "#DAE8FF",
-          "secondary-content": "#212638",
-          accent: "#93BBFB",
-          "accent-content": "#212638",
-          neutral: "#212638",
-          "neutral-content": "#ffffff",
-          "base-100": "#ffffff",
-          "base-200": "#f4f8ff",
-          "base-300": "#DAE8FF",
-          "base-content": "#212638",
-          info: "#93BBFB",
-          success: "#34EEB6",
-          warning: "#FFCF72",
-          error: "#FF8863",
-
+          primary: "#6366F1", // light indigo with a magenta hint
+          "primary-content": "#FFFFFF",
+          secondary: "#D946EF", // magenta
+          "secondary-content": "#1E293B",
+          accent: "#E879F9", // soft magenta accent
+          "accent-content": "#1E293B",
+          neutral: "#CBD5E1", // light cool gray
+          "neutral-content": "#1E293B",
+          "base-100": "#F9FAFB", // very light gray background
+          "base-200": "#F3F4F6",
+          "base-300": "#E5E7EB",
+          "base-content": "#1E293B", // dark gray text
+          info: "#93C5FD", // light blue for info
+          success: "#A78BFA", // lavender for success
+          warning: "#FBBF24", // amber
+          error: "#F87171", // soft red for error
           "--rounded-btn": "9999rem",
-
           ".tooltip": {
             "--tooltip-tail": "6px",
           },
@@ -41,25 +44,23 @@ module.exports = {
       },
       {
         dark: {
-          primary: "#212638",
-          "primary-content": "#F9FBFF",
-          secondary: "#323f61",
-          "secondary-content": "#F9FBFF",
-          accent: "#4969A6",
-          "accent-content": "#F9FBFF",
-          neutral: "#F9FBFF",
-          "neutral-content": "#385183",
-          "base-100": "#385183",
-          "base-200": "#2A3655",
-          "base-300": "#212638",
-          "base-content": "#F9FBFF",
-          info: "#385183",
-          success: "#34EEB6",
-          warning: "#FFCF72",
-          error: "#FF8863",
-
+          primary: "#4F46E5", // deeper indigo-magenta
+          "primary-content": "#F9FAFB",
+          secondary: "#DB2777", // dark magenta
+          "secondary-content": "#F9FAFB",
+          accent: "#E879F9", // soft magenta accent
+          "accent-content": "#F9FAFB",
+          neutral: "#64748B", // mid-tone cool gray
+          "neutral-content": "#F9FAFB",
+          "base-100": "#1E293B", // dark gray background
+          "base-200": "#111827",
+          "base-300": "#4F46E5", // deeper indigo-magenta background
+          "base-content": "#F9FAFB", // light content
+          info: "#60A5FA", // light blue for info
+          success: "#A78BFA", // lavender for success
+          warning: "#F59E0B", // amber
+          error: "#EF4444", // red
           "--rounded-btn": "9999rem",
-
           ".tooltip": {
             "--tooltip-tail": "6px",
             "--tooltip-color": "oklch(var(--p))",
@@ -74,6 +75,7 @@ module.exports = {
       },
     ],
   },
+
   theme: {
     extend: {
       boxShadow: {
