@@ -1,0 +1,36 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/CommitmentContract.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract CommitmentContract {\n\tstruct Commitment {\n\t\taddress creator;\n\t\tstring description;\n\t\tuint256 stakeAmount;\n\t\tuint256 endDate;\n\t\tbool isGroupCommitment;\n\t\tuint256 proofFrequency;\n\t\tbool isCompleted;\n\t\taddress[] participants;\n\t\tmapping(address => bool) hasParticipated;\n\t}\n\n\tmapping(uint256 => Commitment) public commitments;\n\tuint256 public commitmentCounter;\n\n\tevent CommitmentCreated(\n\t\tuint256 indexed commitmentId,\n\t\taddress creator,\n\t\tstring description,\n\t\tuint256 stakeAmount,\n\t\tuint256 endDate,\n\t\tuint256 proofFrequency,\n\t\tbool isGroupCommitment\n\t);\n\tevent ParticipantJoined(uint256 indexed commitmentId, address participant);\n\tevent CommitmentCompleted(\n\t\tuint256 indexed commitmentId,\n\t\taddress[] completedParticipants,\n\t\tuint256 rewardPerParticipant\n\t);\n\tevent DustSentToCreator(uint256 indexed commitmentId, uint256 dustAmount);\n\n\tfunction createCommitment(\n\t\tstring memory _description,\n\t\tuint256 _stakeAmount,\n\t\tuint256 _endDate,\n\t\tuint256 proofFrequency,\n\t\tbool _isGroupCommitment\n\t) public payable {\n\t\trequire(\n\t\t\tmsg.value == _stakeAmount,\n\t\t\t\"Stake amount must match the sent value\"\n\t\t);\n\t\trequire(_endDate > block.timestamp, \"End date must be in the future\");\n\t\trequire(_stakeAmount > 0, \"Stake amount must be greater than zero\");\n\t\trequire(\n\t\t\tproofFrequency > 0,\n\t\t\t\"Proof frequency must be greater than zero\"\n\t\t);\n\n\t\tuint256 commitmentId = commitmentCounter++;\n\t\tCommitment storage newCommitment = commitments[commitmentId];\n\t\tnewCommitment.creator = msg.sender;\n\t\tnewCommitment.description = _description;\n\t\tnewCommitment.stakeAmount = _stakeAmount;\n\t\tnewCommitment.endDate = _endDate;\n\t\tnewCommitment.isGroupCommitment = _isGroupCommitment;\n\t\tnewCommitment.isCompleted = false;\n\t\tnewCommitment.participants.push(msg.sender);\n\t\tnewCommitment.hasParticipated[msg.sender] = true;\n\t\tnewCommitment.proofFrequency = proofFrequency;\n\n\t\temit CommitmentCreated(\n\t\t\tcommitmentId,\n\t\t\tmsg.sender,\n\t\t\t_description,\n\t\t\t_stakeAmount,\n\t\t\tnewCommitment.endDate,\n\t\t\tproofFrequency,\n\t\t\t_isGroupCommitment\n\t\t);\n\t}\n\n\tfunction joinCommitment(uint256 _commitmentId) public payable {\n\t\tCommitment storage commitment = commitments[_commitmentId];\n\t\trequire(commitment.isGroupCommitment, \"This is not a group commitment\");\n\t\trequire(!commitment.isCompleted, \"Commitment is already completed\");\n\t\trequire(\n\t\t\tblock.timestamp < commitment.endDate,\n\t\t\t\"Commitment period has ended\"\n\t\t);\n\t\trequire(msg.value == commitment.stakeAmount, \"Incorrect stake amount\");\n\t\trequire(\n\t\t\t!commitment.hasParticipated[msg.sender],\n\t\t\t\"You have already joined this commitment\"\n\t\t);\n\n\t\tcommitment.participants.push(msg.sender);\n\t\tcommitment.hasParticipated[msg.sender] = true;\n\n\t\temit ParticipantJoined(_commitmentId, msg.sender);\n\t}\n\n\tfunction completeCommitment(\n\t\tuint256 _commitmentId,\n\t\taddress[] memory _completedParticipants\n\t) public {\n\t\tCommitment storage commitment = commitments[_commitmentId];\n\t\trequire(\n\t\t\tmsg.sender == commitment.creator,\n\t\t\t\"Only the creator can complete the commitment\"\n\t\t);\n\t\trequire(!commitment.isCompleted, \"Commitment is already completed\");\n\t\trequire(\n\t\t\tblock.timestamp >= commitment.endDate,\n\t\t\t\"Commitment period has not ended yet\"\n\t\t);\n\n\t\tuint256 totalReward = commitment.stakeAmount *\n\t\t\tcommitment.participants.length;\n\t\tuint256 rewardPerParticipant = totalReward /\n\t\t\t_completedParticipants.length;\n\t\tuint256 totalDistributed = rewardPerParticipant *\n\t\t\t_completedParticipants.length;\n\t\tuint256 dustAmount = totalReward - totalDistributed;\n\n\t\tfor (uint256 i = 0; i < _completedParticipants.length; i++) {\n\t\t\trequire(\n\t\t\t\tcommitment.hasParticipated[_completedParticipants[i]],\n\t\t\t\t\"Invalid participant\"\n\t\t\t);\n\t\t\t(bool success, ) = _completedParticipants[i].call{\n\t\t\t\tvalue: rewardPerParticipant\n\t\t\t}(\"\");\n\t\t\trequire(success, \"Payment failed\");\n\t\t}\n\n\t\tif (dustAmount > 0) {\n\t\t\t(bool success, ) = commitment.creator.call{ value: dustAmount }(\"\");\n\t\t\trequire(success, \"Dust payment failed\");\n\t\t\temit DustSentToCreator(_commitmentId, dustAmount);\n\t\t}\n\n\t\tcommitment.isCompleted = true;\n\t\temit CommitmentCompleted(\n\t\t\t_commitmentId,\n\t\t\t_completedParticipants,\n\t\t\trewardPerParticipant\n\t\t);\n\t}\n\n\tfunction getParticipants(\n\t\tuint256 _commitmentId\n\t) public view returns (address[] memory) {\n\t\treturn commitments[_commitmentId].participants;\n\t}\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

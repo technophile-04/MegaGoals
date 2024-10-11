@@ -2,20 +2,21 @@ import { createConfig } from "@ponder/core";
 import { http } from "viem";
 
 import deployedContracts from "./contracts/deployedContracts";
+import { optimism } from "viem/chains";
 
 export default createConfig({
   networks: {
-    hardhat: {
-      chainId: 31337,
+    optimism: {
+      chainId: optimism.id,
       transport: http(),
     },
   },
   contracts: {
     CommitmentContract: {
-      network: "hardhat",
-      abi: deployedContracts[31337].CommitmentContract.abi,
-      address: deployedContracts[31337].CommitmentContract.address,
-      startBlock: 0,
+      network: "optimism",
+      abi: deployedContracts[optimism.id].CommitmentContract.abi,
+      address: deployedContracts[optimism.id].CommitmentContract.address,
+      startBlock: 126523619,
     },
   },
 });

@@ -1,9 +1,11 @@
 import React from "react";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 import { apolloClient } from "~~/components/ScaffoldEthAppWithProviders";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { Commitment } from "~~/hooks/useCommitments";
+import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface CommitmentItemProps {
@@ -11,10 +13,14 @@ interface CommitmentItemProps {
 }
 
 const CommitmentItem: React.FC<CommitmentItemProps> = ({ commitment }) => {
+  const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
+
   const { writeContractAsync: writeCommitmentContractAsync } = useScaffoldWriteContract("CommitmentContract");
+  const { address: connectedAddress } = useAccount();
 
   const handleJoinCommitment = async () => {
     try {
+      if (!connectedAddress) return notification.error("Please connect your wallet first.");
       await writeCommitmentContractAsync({
         functionName: "joinCommitment",
         args: [BigInt(commitment.id)],
@@ -59,15 +65,18 @@ const CommitmentItem: React.FC<CommitmentItemProps> = ({ commitment }) => {
           <strong>Participants:</strong> {commitment.participants.items.length} 🚀
         </p>
         <p className="m-0">
-          <strong>Stake Amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH 💰
+          <strong>Joining Amount:</strong> {(parseFloat(commitment.stakeAmount) / 1e18).toFixed(4)} ETH / $
+          {(nativeCurrencyPrice * (parseFloat(commitment.stakeAmount) / 1e18)).toFixed(2)} appx.
         </p>
         <p className="m-0">
           <strong>Frequency:</strong> Every {commitment.proofFrequency} day(s)
         </p>
         <div className="card-actions justify-end mt-4">
-          <button className="btn btn-accent btn-outline" onClick={handleJoinCommitment}>
-            Jump In! 🚀
-          </button>
+          {commitment.isGroupCommitment && (
+            <button className="btn btn-accent btn-outline" onClick={handleJoinCommitment}>
+              Jump In! 🚀
+            </button>
+          )}
           <Link href={`/commitment/${commitment.id}`}>
             <button className="btn btn-primary">See Details 📋</button>
           </Link>

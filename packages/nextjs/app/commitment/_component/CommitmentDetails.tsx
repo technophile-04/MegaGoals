@@ -6,12 +6,15 @@ import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useCommitmentDetails } from "~~/hooks/useCommitmentDetails";
+import { useGlobalState } from "~~/services/store/store";
 
 interface CommitmentDetailsProps {
   id: string;
 }
 
 const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
+  const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
+
   const { loading, error, data } = useCommitmentDetails(id);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [completedParticipants, setCompletedParticipants] = useState<string[]>([]);
@@ -112,13 +115,23 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
           <strong>End Date:</strong> {new Date(parseInt(commitment.endDate) * 1000).toLocaleString()}
         </p>
         <p className="m-0">
-          <strong>Joining amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH 💰
+          <strong>Joining amount:</strong>
+          {(parseFloat(commitment.stakeAmount) / 1e18).toFixed(4)} ETH / $
+          {(nativeCurrencyPrice * (parseFloat(commitment.stakeAmount) / 1e18)).toFixed(2)} appx.
         </p>
         <p className="m-0">
-          <strong>Proof Frequency:</strong> Every {commitment.proofFrequency} day(s)
+          <strong>Frequency:</strong> Every {commitment.proofFrequency} day(s)
         </p>
         <p className="m-0">
-          <strong>Total stake:</strong> {commitment?.totalStake ? parseFloat(commitment.totalStake) / 1e18 : 0} ETH
+          <strong>Total stake:</strong>{" "}
+          {commitment?.totalStake
+            ? `
+          ${(parseFloat(commitment.totalStake) / 1e18).toFixed(4)} ETH / $
+          ${(nativeCurrencyPrice * (parseFloat(commitment.totalStake) / 1e18)).toFixed(2)} appx.
+
+`
+            : 0}{" "}
+          ETH
         </p>
 
         <div className="mt-4">
