@@ -8,7 +8,7 @@ export default createConfig({
   networks: {
     optimism: {
       chainId: optimism.id,
-      transport: http(),
+      transport: http(`${process.env.PONDER_RPC_URL_1}`),
     },
   },
   contracts: {
