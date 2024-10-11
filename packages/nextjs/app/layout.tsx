@@ -6,7 +6,7 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
   title: "MegaGoals",
-  description: "Set your goals!",
+  description: "Set your MegaGoals!",
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
