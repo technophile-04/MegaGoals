@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { NetworkOptions } from "./NetworkOptions";
-import { signOut } from "next-auth/react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { getAddress } from "viem";
 import { Address } from "viem";
@@ -128,7 +127,6 @@ export const AddressInfoDropdown = ({
               type="button"
               onClick={() => {
                 disconnect();
-                signOut();
               }}
             >
               <ArrowLeftOnRectangleIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Disconnect</span>
