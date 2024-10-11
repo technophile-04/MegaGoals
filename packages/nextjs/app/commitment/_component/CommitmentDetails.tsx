@@ -18,7 +18,8 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
   const [availableParticipants, setAvailableParticipants] = useState<string[]>([]);
   const { address: connectedAccount } = useAccount();
 
-  const { writeContractAsync: writeCommitmentContractAsync } = useScaffoldWriteContract("CommitmentContract");
+  const { writeContractAsync: writeCommitmentContractAsync, isMining: isSendingTransaction } =
+    useScaffoldWriteContract("CommitmentContract");
 
   useEffect(() => {
     if (data?.commitment) {
@@ -53,6 +54,17 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
       handleCloseModal();
     } catch (e) {
       console.error("Error completing commitment:", e);
+    }
+  };
+
+  const handleJoinCommitment = async () => {
+    try {
+      await writeCommitmentContractAsync({
+        functionName: "joinCommitment",
+        args: [BigInt(id)],
+      });
+    } catch (e) {
+      console.error("Error joining commitment:", e);
     }
   };
 
@@ -129,11 +141,20 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
           </div>
         )}
         {shouldDisplayCompleteCommitmentButton && (
-          <button className="btn btn-primary mt-4" disabled={disableCompleteCommitmentButton} onClick={handleOpenModal}>
+          <button
+            className="btn btn-primary mt-4"
+            disabled={disableCompleteCommitmentButton || isSendingTransaction}
+            onClick={handleOpenModal}
+          >
             Complete Commitment
           </button>
         )}
         {commitment.isCompleted && <h2 className="text-2xl text-center">Completed 🎉</h2>}
+        {!shouldDisplayCompleteCommitmentButton && !commitment.isCompleted && (
+          <button className="btn btn-primary mt-4" disabled={isSendingTransaction} onClick={handleJoinCommitment}>
+            Join Commitment
+          </button>
+        )}
       </div>
 
       {/* Modal */}
@@ -159,7 +180,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
             </button>
           </div>
           <div className="modal-action">
-            <button className="btn btn-primary" onClick={handleCompleteCommitment}>
+            <button className="btn btn-primary" disabled={isSendingTransaction} onClick={handleCompleteCommitment}>
               Complete
             </button>
             <button className="btn" onClick={handleCloseModal}>
