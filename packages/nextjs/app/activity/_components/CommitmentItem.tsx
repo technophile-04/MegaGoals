@@ -47,6 +47,8 @@ const CommitmentItem: React.FC<CommitmentItemProps> = ({ commitment }) => {
   const frequencyText = getFrequencyText(commitment.proofFrequency);
   const summaryText = `${commitment.description}, ${frequencyText} until ${endDate}`;
 
+  const disableJoinButton = parseInt(commitment.endDate) * 1000 < Date.now();
+
   return (
     <div className="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
       <div className="card-body">
@@ -73,7 +75,7 @@ const CommitmentItem: React.FC<CommitmentItemProps> = ({ commitment }) => {
         </p>
         <div className="card-actions justify-end mt-4">
           {commitment.isGroupCommitment && (
-            <button className="btn btn-accent btn-outline" onClick={handleJoinCommitment}>
+            <button className="btn btn-accent btn-outline" disabled={disableJoinButton} onClick={handleJoinCommitment}>
               Jump In! 🚀
             </button>
           )}
