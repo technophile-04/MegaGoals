@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "./";
 const deployedContracts = {
   31337: {
     CommitmentContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           anonymous: false,
@@ -23,6 +23,12 @@ const deployedContracts = {
               internalType: "address[]",
               name: "completedParticipants",
               type: "address[]",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "rewardPerParticipant",
+              type: "uint256",
             },
           ],
           name: "CommitmentCompleted",
@@ -75,6 +81,25 @@ const deployedContracts = {
             },
           ],
           name: "CommitmentCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "commitmentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "dustAmount",
+              type: "uint256",
+            },
+          ],
+          name: "DustSentToCreator",
           type: "event",
         },
         {

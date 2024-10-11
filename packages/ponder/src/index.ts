@@ -73,6 +73,7 @@ ponder.on(
         isCompleted: true,
         // @ts-expect-error
         completedParticipants: event.args.completedParticipants,
+        rewardPerParticipant: event.args.rewardPerParticipant,
       },
     });
   },

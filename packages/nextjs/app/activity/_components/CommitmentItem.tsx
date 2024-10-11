@@ -61,7 +61,7 @@ const CommitmentItem: React.FC<CommitmentItemProps> = ({ commitment }) => {
           <strong>Stake Amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH
         </p>
         <p className="m-0">
-          <strong>Proof Frequency:</strong> Every {commitment.proofFrequency} day(s)
+          <strong>Frequency:</strong> Every {commitment.proofFrequency} day(s)
         </p>
         <div className="card-actions justify-end mt-4">
           <button className="btn btn-secondary" onClick={handleJoinCommitment}>
