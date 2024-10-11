@@ -33,16 +33,6 @@ ponder.on(
         participant: event.args.creator,
       },
     });
-
-    // Ensure user exists in off-chain database
-    await fetch("http://localhost:3000/api/ensure-user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.SECRET}`,
-      },
-      body: JSON.stringify({ address: event.args.creator }, replacer),
-    });
   },
 );
 
