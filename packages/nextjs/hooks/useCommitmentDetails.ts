@@ -9,6 +9,7 @@ const COMMITMENT_DETAILS_QUERY = gql`
       stakeAmount
       endDate
       isGroupCommitment
+      isCompleted
       proofFrequency
       totalStake
       completedParticipants
@@ -34,6 +35,7 @@ export type Commitment = {
   stakeAmount: string;
   endDate: string;
   isGroupCommitment: boolean;
+  isCompleted: boolean;
   proofFrequency: string;
   completedParticipants: string[] | null;
   participants: {

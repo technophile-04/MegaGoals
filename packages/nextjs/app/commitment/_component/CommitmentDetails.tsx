@@ -1,7 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useCommitmentDetails } from "~~/hooks/useCommitmentDetails";
 
 interface CommitmentDetailsProps {
@@ -10,12 +13,57 @@ interface CommitmentDetailsProps {
 
 const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
   const { loading, error, data } = useCommitmentDetails(id);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [completedParticipants, setCompletedParticipants] = useState<string[]>([]);
+  const [availableParticipants, setAvailableParticipants] = useState<string[]>([]);
+  const { address: connectedAccount } = useAccount();
 
-  if (loading) return <div className="loading loading-spinner loading-lg"></div>;
-  if (error) return <div className="alert alert-error">Error loading commitment details</div>;
-  if (!data?.commitment) return <div className="alert alert-warning">Commitment not found</div>;
+  const { writeContractAsync: writeCommitmentContractAsync } = useScaffoldWriteContract("CommitmentContract");
 
-  const { commitment } = data;
+  useEffect(() => {
+    if (data?.commitment) {
+      const allParticipants = data.commitment.participants.items.map(item => item.participant);
+      setAvailableParticipants(allParticipants);
+    }
+  }, [data]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleRemoveParticipant = (address: string) => {
+    setCompletedParticipants(prev => prev.filter(p => p !== address));
+    setAvailableParticipants(prev => [...prev, address]);
+  };
+
+  const handleAddParticipant = () => {
+    if (availableParticipants.length > 0) {
+      const [nextParticipant, ...rest] = availableParticipants;
+      setCompletedParticipants(prev => [...prev, nextParticipant]);
+      setAvailableParticipants(rest);
+    }
+  };
+
+  const handleCompleteCommitment = async () => {
+    try {
+      await writeCommitmentContractAsync({
+        functionName: "completeCommitment",
+        args: [BigInt(id), completedParticipants],
+      });
+      handleCloseModal();
+    } catch (e) {
+      console.error("Error completing commitment:", e);
+    }
+  };
+
+  const handleOpenModal = () => {
+    if (data?.commitment) {
+      const allParticipants = data.commitment.participants.items.map(item => item.participant);
+      setCompletedParticipants(allParticipants);
+      setAvailableParticipants([]);
+    }
+    setIsModalOpen(true);
+  };
 
   const getFrequencyText = (frequency: string) => {
     const freq = parseInt(frequency);
@@ -25,9 +73,18 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
     return `every ${freq} days`;
   };
 
+  if (loading) return <div className="loading loading-spinner loading-lg"></div>;
+  if (error) return <div className="alert alert-error">Error loading commitment details</div>;
+  if (!data?.commitment) return <div className="alert alert-warning">Commitment not found</div>;
+
+  const { commitment } = data;
   const endDate = new Date(parseInt(commitment.endDate) * 1000).toLocaleDateString();
   const frequencyText = getFrequencyText(commitment.proofFrequency);
   const summaryText = `${commitment.description}, ${frequencyText} till ${endDate}`;
+
+  const shouldDisplayCompleteCommitmentButton =
+    connectedAccount?.toLowerCase() === commitment.creator.toLowerCase() && !commitment.isCompleted;
+  const disableCompleteCommitmentButton = parseInt(commitment.endDate) * 1000 > Date.now();
 
   return (
     <div className="card bg-base-100 shadow-xl">
@@ -71,7 +128,46 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
             </ul>
           </div>
         )}
+        {shouldDisplayCompleteCommitmentButton && (
+          <button className="btn btn-primary mt-4" disabled={disableCompleteCommitmentButton} onClick={handleOpenModal}>
+            Complete Commitment
+          </button>
+        )}
+        {commitment.isCompleted && <h2 className="text-2xl text-center">Completed 🎉</h2>}
       </div>
+
+      {/* Modal */}
+      <dialog id="complete_modal" className={`modal ${isModalOpen ? "modal-open" : ""}`}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Complete Commitment</h3>
+          <p className="py-4">Select the participants who completed the commitment:</p>
+          <div className="space-y-4">
+            {completedParticipants.map((address, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <Address address={address} />
+                <button onClick={() => handleRemoveParticipant(address)} className="btn btn-circle btn-sm btn-error">
+                  <MinusIcon className="size-[20px]" />
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={handleAddParticipant}
+              className="btn btn-circle btn-sm btn-primary"
+              disabled={availableParticipants.length === 0}
+            >
+              <PlusIcon className="size-[20px]" />
+            </button>
+          </div>
+          <div className="modal-action">
+            <button className="btn btn-primary" onClick={handleCompleteCommitment}>
+              Complete
+            </button>
+            <button className="btn" onClick={handleCloseModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };
