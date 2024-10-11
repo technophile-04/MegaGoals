@@ -33,7 +33,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">{summaryText}</h2>
-        <div className="badge badge-primary mb-2">{commitment.isGroupCommitment ? "Group" : "Individual"}</div>
+        <div className="badge badge-primary mb-1">{commitment.isGroupCommitment ? "Group" : "Individual"}</div>
         <p className="my-0">
           <strong>Creator:</strong> <Address address={commitment.creator} />
         </p>
@@ -41,7 +41,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
           <strong>End Date:</strong> {new Date(parseInt(commitment.endDate) * 1000).toLocaleString()}
         </p>
         <p className="my-0">
-          <strong>Stake Amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH
+          <strong>Joining amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH
         </p>
         <p className="my-0">
           <strong>Proof Frequency:</strong> Every {commitment.proofFrequency} day(s)

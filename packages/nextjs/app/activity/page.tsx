@@ -66,7 +66,7 @@ const Commitments = () => {
         </div>
         {completedCommitment?.commitments.items.length === 0 && (
           <div className="text-center mt-10">
-            <p className="text-xl">No active commitments found.</p>
+            <p className="text-xl">No completed commitments found.</p>
           </div>
         )}
       </div>

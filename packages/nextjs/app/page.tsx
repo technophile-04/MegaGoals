@@ -10,18 +10,18 @@ import { notification } from "~~/utils/scaffold-eth";
 const Home: NextPage = () => {
   const [stakeAmount, setStakeAmount] = useState("");
   const [commitmentMessage, setCommitmentMessage] = useState("");
-  const [duration, setDuration] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
   const [proofFrequency, setProofFrequency] = useState("daily");
   const [isGroupCommitment, setIsGroupCommitment] = useState(true);
   const { writeContractAsync: writeGroupCommitmentContractAsync } = useScaffoldWriteContract("CommitmentContract");
 
   const handleCreateGroupCommitment = async () => {
     try {
-      if (!duration || !stakeAmount || !commitmentMessage) {
+      if (!endDateTime || !stakeAmount || !commitmentMessage) {
         return notification.error("Please fill all the fields");
       }
 
-      const endDate = new Date(duration).getTime() / 1000;
+      const endDate = new Date(endDateTime).getTime() / 1000;
 
       const frequencyInDays = {
         daily: 1,
@@ -61,15 +61,15 @@ const Home: NextPage = () => {
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">End date</span>
+                  <span className="label-text">End date and time</span>
                 </label>
                 <div className={`flex border-2 border-base-300 bg-base-200 rounded-full text-accent`}>
                   <input
                     className="input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                    placeholder="Enter Duration in days"
-                    type="date"
-                    onChange={e => setDuration(e.target.value)}
-                    value={duration}
+                    placeholder="Enter end date and time"
+                    type="datetime-local"
+                    onChange={e => setEndDateTime(e.target.value)}
+                    value={endDateTime}
                   />
                 </div>
               </div>
