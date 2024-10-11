@@ -28,7 +28,7 @@ const Commitments = () => {
   if (loading || isCompletedLoading)
     return (
       <div className="flex justify-center items-center h-screen">
-        <span className="loading loading-spinner loading-lg"></span>
+        <span className="loading loading-spinner loading-lg text-secondary"></span>
       </div>
     );
 
@@ -42,31 +42,31 @@ const Commitments = () => {
     );
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-8">
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6 text-center">Active Commitments</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-primary animate-pulse">Active Commitments</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {activeCommitment?.commitments.items.map(commitment => (
             <CommitmentItem key={commitment.id} commitment={commitment} />
           ))}
         </div>
         {activeCommitment?.commitments.items.length === 0 && (
           <div className="text-center mt-10">
-            <p className="text-xl">No active commitments found.</p>
+            <p className="text-xl text-gray-500">No active commitments found.</p>
           </div>
         )}
       </div>
 
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6 text-center">Completed Commitments</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-secondary animate-pulse">Completed Commitments</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {completedCommitment?.commitments.items.map(commitment => (
             <CommitmentItem key={commitment.id} commitment={commitment} />
           ))}
         </div>
         {completedCommitment?.commitments.items.length === 0 && (
           <div className="text-center mt-10">
-            <p className="text-xl">No completed commitments found.</p>
+            <p className="text-xl text-gray-500">No completed commitments found.</p>
           </div>
         )}
       </div>

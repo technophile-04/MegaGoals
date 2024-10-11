@@ -99,25 +99,28 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
   const disableCompleteCommitmentButton = parseInt(commitment.endDate) * 1000 > Date.now();
 
   return (
-    <div className="card bg-base-100 shadow-xl">
+    <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out">
       <div className="card-body">
-        <h2 className="card-title">{summaryText}</h2>
-        <div className="badge badge-primary mb-1">{commitment.isGroupCommitment ? "Group" : "Individual"}</div>
-        <p className="my-0">
+        <h2 className="card-title text-3xl text-accent mb-2">{summaryText}</h2>
+        <div className="badge badge-primary mb-2">
+          {commitment.isGroupCommitment ? "Group Challenge 🎉" : "Solo Mission 💪"}
+        </div>
+        <p className="m-0">
           <strong>Creator:</strong> <Address address={commitment.creator} />
         </p>
-        <p className="my-0">
+        <p className="m-0">
           <strong>End Date:</strong> {new Date(parseInt(commitment.endDate) * 1000).toLocaleString()}
         </p>
-        <p className="my-0">
-          <strong>Joining amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH
+        <p className="m-0">
+          <strong>Joining amount:</strong> {parseFloat(commitment.stakeAmount) / 1e18} ETH 💰
         </p>
-        <p className="my-0">
+        <p className="m-0">
           <strong>Proof Frequency:</strong> Every {commitment.proofFrequency} day(s)
         </p>
-        <p className="my-0">
-          <strong>Total stake:</strong> {commitment?.totalStake ? parseFloat(commitment.totalStake) / 1e18 : 0} ETH{" "}
+        <p className="m-0">
+          <strong>Total stake:</strong> {commitment?.totalStake ? parseFloat(commitment.totalStake) / 1e18 : 0} ETH
         </p>
+
         <div className="mt-4">
           <h3 className="font-bold">Participants:</h3>
           <ul className="space-y-3">
@@ -128,6 +131,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
             ))}
           </ul>
         </div>
+
         {commitment.completedParticipants && commitment.completedParticipants.length > 0 && (
           <div className="mt-4">
             <h3 className="font-bold">Completed Participants:</h3>
@@ -140,19 +144,20 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
             </ul>
           </div>
         )}
+
         {shouldDisplayCompleteCommitmentButton && (
           <button
-            className="btn btn-primary mt-4"
+            className="btn btn-accent mt-4"
             disabled={disableCompleteCommitmentButton || isSendingTransaction}
             onClick={handleOpenModal}
           >
-            Complete Commitment
+            Complete Commitment! 🚀
           </button>
         )}
-        {commitment.isCompleted && <h2 className="text-2xl text-center">Completed 🎉</h2>}
+        {commitment.isCompleted && <h2 className="text-2xl text-center">Mission Accomplished! 🎉</h2>}
         {!shouldDisplayCompleteCommitmentButton && !commitment.isCompleted && (
           <button className="btn btn-primary mt-4" disabled={isSendingTransaction} onClick={handleJoinCommitment}>
-            Join Commitment
+            Join the Journey 🚀
           </button>
         )}
       </div>
@@ -161,7 +166,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
       <dialog id="complete_modal" className={`modal ${isModalOpen ? "modal-open" : ""}`}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">Complete Commitment</h3>
-          <p className="py-4">Select the participants who completed the commitment:</p>
+          <p className="py-4">Select the participants who made it to the end:</p>
           <div className="space-y-4">
             {completedParticipants.map((address, index) => (
               <div key={index} className="flex items-center space-x-2">
@@ -180,7 +185,7 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
             </button>
           </div>
           <div className="modal-action">
-            <button className="btn btn-primary" disabled={isSendingTransaction} onClick={handleCompleteCommitment}>
+            <button className="btn btn-accent" disabled={isSendingTransaction} onClick={handleCompleteCommitment}>
               Complete
             </button>
             <button className="btn" onClick={handleCloseModal}>
