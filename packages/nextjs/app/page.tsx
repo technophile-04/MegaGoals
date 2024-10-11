@@ -7,6 +7,12 @@ import { EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
+//TODO:
+// Endate
+// Dropdown with daily and weekly
+// Share with megaZu community
+// Make a summary concatinate strings
+
 const Home: NextPage = () => {
   const [stakeAmount, setStakeAmount] = useState("");
   const [commitmentMessage, setCommitmentMessage] = useState("");
@@ -20,9 +26,12 @@ const Home: NextPage = () => {
       if (!duration || !stakeAmount || !commitmentMessage) {
         return notification.error("Please fill all the fields");
       }
+
+      const endDate = new Date(duration).getTime() / 1000;
+
       await writeGroupCommitmentContractAsync({
         functionName: "createCommitment",
-        args: [commitmentMessage, parseEther(stakeAmount), BigInt(duration), BigInt(proofFrequency), isGroupCommitment],
+        args: [commitmentMessage, parseEther(stakeAmount), BigInt(endDate), BigInt(proofFrequency), isGroupCommitment],
         value: parseEther(stakeAmount),
       });
     } catch (e) {
@@ -35,7 +44,7 @@ const Home: NextPage = () => {
       <div className="px-5 w-full max-w-2xl">
         <h1 className="text-center mb-8">
           <span className="block text-2xl mb-2">Welcome to</span>
-          <span className="block text-4xl font-bold">Group Commitment</span>
+          <span className="block text-4xl font-bold">MegaGoals</span>
         </h1>
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -44,21 +53,17 @@ const Home: NextPage = () => {
                 <label className="label">
                   <span className="label-text">Commitment Message</span>
                 </label>
-                <InputBase
-                  placeholder="Go to gym for 30 days"
-                  value={commitmentMessage}
-                  onChange={setCommitmentMessage}
-                />
+                <InputBase placeholder="Go to gym" value={commitmentMessage} onChange={setCommitmentMessage} />
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Duration in days</span>
+                  <span className="label-text">End date</span>
                 </label>
                 <div className={`flex border-2 border-base-300 bg-base-200 rounded-full text-accent`}>
                   <input
                     className="input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
                     placeholder="Enter Duration in days"
-                    type="number"
+                    type="date"
                     onChange={e => setDuration(e.target.value)}
                     value={duration}
                   />
@@ -66,7 +71,7 @@ const Home: NextPage = () => {
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Proof frequency in days</span>
+                  <span className="label-text">Frequency</span>
                 </label>
                 <div className={`flex border-2 border-base-300 bg-base-200 rounded-full text-accent`}>
                   <input

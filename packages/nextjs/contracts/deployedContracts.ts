@@ -190,7 +190,7 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "_durationInDays",
+              name: "_endDate",
               type: "uint256",
             },
             {

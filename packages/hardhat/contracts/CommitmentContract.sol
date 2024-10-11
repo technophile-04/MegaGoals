@@ -35,7 +35,7 @@ contract CommitmentContract {
 	function createCommitment(
 		string memory _description,
 		uint256 _stakeAmount,
-		uint256 _durationInDays,
+		uint256 _endDate,
 		uint256 proofFrequency,
 		bool _isGroupCommitment
 	) public payable {
@@ -43,13 +43,14 @@ contract CommitmentContract {
 			msg.value == _stakeAmount,
 			"Stake amount must match the sent value"
 		);
+		require(_endDate > block.timestamp, "End date must be in the future");
 
 		uint256 commitmentId = commitmentCounter++;
 		Commitment storage newCommitment = commitments[commitmentId];
 		newCommitment.creator = msg.sender;
 		newCommitment.description = _description;
 		newCommitment.stakeAmount = _stakeAmount;
-		newCommitment.endDate = block.timestamp + (_durationInDays * 1 days);
+		newCommitment.endDate = _endDate;
 		newCommitment.isGroupCommitment = _isGroupCommitment;
 		newCommitment.isCompleted = false;
 		newCommitment.participants.push(msg.sender);
@@ -87,6 +88,7 @@ contract CommitmentContract {
 		emit ParticipantJoined(_commitmentId, msg.sender);
 	}
 
+	// TODO: Check this
 	function completeCommitment(
 		uint256 _commitmentId,
 		address[] memory _completedParticipants
