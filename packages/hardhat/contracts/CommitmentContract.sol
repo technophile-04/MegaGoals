@@ -114,7 +114,9 @@ contract CommitmentContract {
 			commitment.participants.length;
 		uint256 rewardPerParticipant = totalReward /
 			_completedParticipants.length;
-		uint256 dustAmount = totalReward % _completedParticipants.length;
+		uint256 totalDistributed = rewardPerParticipant *
+			_completedParticipants.length;
+		uint256 dustAmount = totalReward - totalDistributed;
 
 		for (uint256 i = 0; i < _completedParticipants.length; i++) {
 			require(

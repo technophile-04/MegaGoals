@@ -21,6 +21,7 @@ ponder.on(
         proofFrequency: event.args.proofFrequency,
         isGroupCommitment: event.args.isGroupCommitment,
         isCompleted: false,
+        totalStake: event.args.stakeAmount,
       },
     });
 
@@ -48,7 +49,7 @@ ponder.on(
 ponder.on(
   "CommitmentContract:ParticipantJoined",
   async ({ event, context }) => {
-    const { Participant } = context.db;
+    const { Participant, Commitment } = context.db;
 
     // Use upsert to handle potential edge cases (like if the event is processed twice)
     await Participant.upsert({
@@ -58,6 +59,18 @@ ponder.on(
         participant: event.args.participant,
       },
       update: {}, // No update needed if it already exists
+    });
+
+    //  upadte totalStake in Commitment table
+    await Commitment.update({
+      id: event.args.commitmentId,
+      data: ({ current }) => {
+        console.log(current.totalStake);
+        console.log(current.stakeAmount);
+        return {
+          totalStake: current.totalStake + current.stakeAmount,
+        };
+      },
     });
   },
 );

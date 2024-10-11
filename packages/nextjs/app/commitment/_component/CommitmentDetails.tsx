@@ -46,6 +46,9 @@ const CommitmentDetails: React.FC<CommitmentDetailsProps> = ({ id }) => {
         <p className="my-0">
           <strong>Proof Frequency:</strong> Every {commitment.proofFrequency} day(s)
         </p>
+        <p className="my-0">
+          <strong>Total stake:</strong> {commitment?.totalStake ? parseFloat(commitment.totalStake) / 1e18 : 0} ETH{" "}
+        </p>
         <div className="mt-4">
           <h3 className="font-bold">Participants:</h3>
           <ul className="space-y-3">

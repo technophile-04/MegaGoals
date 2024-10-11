@@ -10,6 +10,7 @@ const COMMITMENT_DETAILS_QUERY = gql`
       endDate
       isGroupCommitment
       proofFrequency
+      totalStake
       completedParticipants
       participants {
         items {
@@ -38,6 +39,7 @@ export type Commitment = {
   participants: {
     items: Participant[];
   };
+  totalStake: string;
 };
 
 export type CommitmentDetailsData = {

@@ -7,6 +7,7 @@ export default createSchema((p) => ({
       creator: p.string(), // address
       description: p.string(),
       stakeAmount: p.bigint(),
+      totalStake: p.bigint(),
       endDate: p.bigint(),
       rewardPerParticipant: p.bigint().optional(),
       isGroupCommitment: p.boolean(),

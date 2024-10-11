@@ -17,6 +17,7 @@ export type Commitment = {
   participants: {
     items: Participant[];
   };
+  totalStake?: string;
 };
 
 export type CommitmentItems = Commitment[];
@@ -38,6 +39,7 @@ export const COMMITMENTS_QUERY = gql`
         isCompleted
         isGroupCommitment
         proofFrequency
+        totalStake
         stakeAmount
         completedParticipants
         participants {
@@ -79,7 +81,7 @@ export const useCommitments = ({
       variables: {
         filter,
         orderBy: "id", // You can change this default ordering if needed
-        orderDirection: "asc",
+        orderDirection: "desc",
       },
       skip: customSkip || Object.values(filter).every(val => val === undefined),
       ...options,
